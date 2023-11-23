@@ -1,9 +1,19 @@
-import { Controller, Get, Post, Body, Delete, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Delete,
+  Param,
+  NotFoundException,
+} from '@nestjs/common';
+import { NewCategoryDto } from './dtos/new-category.dto';
 
 interface Category {
   id: number;
   name: string;
 }
+
 @Controller('categories')
 export class AppController {
   private nextId = 8;
@@ -22,19 +32,23 @@ export class AppController {
   }
 
   @Get('/:id')
-  getCategoriesWithId(@Param('id') categoryId: number) {
-    this.categories.find((c) => c.id === categoryId);
-    return this.categories[categoryId];
+  getCategoryWithId(@Param('id') categoryId: number) {
+    const category = this.categories.find((c) => c.id === categoryId);
+    if (!category) {
+      throw new NotFoundException(`category with id: ${categoryId} not found`);
+    }
+    return category;
   }
+
   @Post()
-  addNewCategory(@Body() payload: { name: string }) {
+  addNewCategory(@Body() payload: NewCategoryDto) {
     const category: Category = { id: this.nextId++, ...payload };
     this.categories.push(category);
     return category;
   }
 
   @Delete('/:id')
-  deleteCategoriesWithId(@Param('id') categoryId: string) {
+  deleteCategoriesWithId(@Param('id') categoryId: number) {
     const objectForDeletion = this.categories.find(
       (c) => c.id === Number(categoryId),
     );
