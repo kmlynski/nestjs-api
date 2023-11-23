@@ -32,8 +32,8 @@ export class AppController {
   }
 
   @Get('/:id')
-  getCategoryWithId(@Param('id') categoryId: number) {
-    const category = this.categories.find((c) => c.id === categoryId);
+  getSingleCategory(@Param('id') categoryId: number) {
+    const category = this.findCategoryById(categoryId);
     if (!category) {
       throw new NotFoundException(`category with id: ${categoryId} not found`);
     }
@@ -48,11 +48,16 @@ export class AppController {
   }
 
   @Delete('/:id')
-  deleteCategoriesWithId(@Param('id') categoryId: number) {
-    const objectForDeletion = this.categories.find(
-      (c) => c.id === Number(categoryId),
-    );
+  removeCategory(@Param('id') categoryId: number) {
+    const objectForDeletion = this.findCategoryById(categoryId);
+    if (!objectForDeletion) {
+      throw new NotFoundException(`category with id: ${categoryId} not found`);
+    }
     this.categories.splice(this.categories.indexOf(objectForDeletion), 1);
     return { message: 'Object deleted successfully ' };
+  }
+
+  private findCategoryById(categoryId: number) {
+    return this.categories.find((c) => c.id === categoryId);
   }
 }
