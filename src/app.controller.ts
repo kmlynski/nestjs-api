@@ -6,6 +6,7 @@ import {
   Delete,
   Param,
   NotFoundException,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { NewCategoryDto } from './dtos/new-category.dto';
 
@@ -32,7 +33,7 @@ export class AppController {
   }
 
   @Get('/:id')
-  getSingleCategory(@Param('id') categoryId: number) {
+  getSingleCategory(@Param('id', ParseIntPipe) categoryId: number) {
     const category = this.findCategoryById(categoryId);
     if (!category) {
       throw new NotFoundException(`category with id: ${categoryId} not found`);
@@ -48,7 +49,7 @@ export class AppController {
   }
 
   @Delete('/:id')
-  removeCategory(@Param('id') categoryId: number) {
+  removeCategory(@Param('id', ParseIntPipe) categoryId: number) {
     const objectForDeletion = this.findCategoryById(categoryId);
     if (!objectForDeletion) {
       throw new NotFoundException(`category with id: ${categoryId} not found`);
